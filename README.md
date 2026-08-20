@@ -1,122 +1,82 @@
 <div align="center">
 
-# 📬 Admond Mailing Simulation
-### *A Feature-Rich, Gmail-Inspired Webmail Client — Crafted in a Single HTML File.*
+  <!-- Logo Header -->
+  <a href="https://muhammadaffan0205.github.io/admond-mailing/">
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&pause=1000&color=2563EB&center=true&vCenter=true&width=500&lines=%F0%9F%93%AC+ADMOND+MAILING;Gmail-Inspired+Webmail+Client;Built+in+a+Single+HTML+File!" alt="Typing SVG" />
+  </a>
 
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](http://makeapullrequest.com)
+  <p align="center">
+    <b>A Pixel-Perfect, High-Performance Email Simulation Engine</b>
+    <br />
+    <i>Crafted with 100% Pure Vanilla Web Technologies — Zero Dependencies, Zero Build Tools.</i>
+  </p>
+
+  <!-- Shields & Badges -->
+  <p align="center">
+    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML"><img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" /></a>
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS"><img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" /></a>
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" /></a>
+    <a href="https://github.com/muhammadaffan0205/admond-mailing/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-00C853.svg?style=for-the-badge" alt="License" /></a>
+  </p>
+
+  <!-- CTA Buttons -->
+  <p align="center">
+    <a href="https://muhammadaffan0205.github.io/admond-mailing/">
+      <img src="https://img.shields.io/badge/🚀_LAUNCH_LIVE_DEMO-0052CC?style=for-the-badge" alt="Live Demo" />
+    </a>
+    <a href="https://github.com/muhammadaffan0205/admond-mailing">
+      <img src="https://img.shields.io/badge/⭐_STAR_REPOSITORY-FFAB00?style=for-the-badge" alt="Star Repo" />
+    </a>
+  </p>
 
 </div>
 
----
-
-## The Vibe
-
-Admond Mailing is not just a UI clone; it is a **fully functional, immersive email simulation environment**. Built entirely with vanilla HTML, CSS, and JavaScript, this single-file application packs the punch of a modern webmail client—complete with a dark theme, dynamic live notifications, and persistence.
-
-Whether you are a recruiter looking for a polished frontend portfolio piece or an enthusiast wanting a sleek offline mail client, Admond has you covered.
+<img src="https://user-images.githubusercontent.com/73097560/115834477-db036080-a470-11eb-9e93-0241c512157a.png" width="100%" />
 
 ---
 
-## Extraordinary Features
-
-<details>
-<summary><b>⚡ Core Engine</b> (Click to expand)</summary>
-
-- **🧠 LocalStorage Persistence** – Your emails, stars, and settings survive browser refreshes like magic.
-- **🌙 Seamless Dark Mode** – A fluid toggle that instantly transforms the UI into a stunning dark theme.
-- **📨 Live Incoming Mail Simulation** – Randomized emails drop into your Inbox every 30–50 seconds with beautiful floating pop-up notifications.
-</details>
-
-<details>
-<summary><b>🚀 Advanced Interactions</b> (Click to expand)</summary>
-
-- **🖱️ Context Menus** – Right-click any email to instantly Star, Delete, or Move it to specific folders.
-- **📎 Bulk Actions** – Select multiple emails with checkboxes to Delete, Star, Mark Read, or Mark Unread in one click.
-- **🔍 Smart Sorting & Search** – Reorder emails by Newest, Oldest, A-Z, or Z-A, and instantly filter them using the live search bar.
-- **📄 Paginated View** – Smooth "Load More" functionality that handles large inboxes elegantly.
-</details>
-
-<details>
-<summary><b>🎯 Professional Composer</b> (Click to expand)</summary>
-
-- **💬 Full Reply/Reply All/Forward** – Pre-populated composer modes that automatically cite the original email body.
-- **📎 CC & BCC Fields** – Professionally structured compose window allows carbon copying and blind carbon copying.
-- **⌨️ Keyboard Shortcuts** – 
-  - `Ctrl + K` → Jump to Search
-  - `Ctrl + Enter` (or `Cmd + Enter`) → Send Email instantly
-  - `Esc` → Close the Compose Modal
-</details>
-
-<details>
-<summary><b>🏷️ Smart Organization</b> (Click to expand)</summary>
-
-- **📂 Multiple Tabs** – Switch seamlessly between Primary, Promotions, and Social tabs within your Inbox.
-- **🏷️ Categorized Labels** – Dedicated "Important", "Social", and "Promotions" folders intelligently handle email classification.
-</details>
-
----
-
-## 🛠️ Tech Stack & Architecture
-
-- **Frontend:** 100% Vanilla JavaScript (ES6+), CSS3, and HTML5.
-- **State Management:** In-memory JavaScript object array with seamless `localStorage` syncing.
-- **Responsive:** Fully responsive design that works flawlessly on desktop, tablet, and mobile devices.
-- **Zero Dependencies:** No external libraries, frameworks, or build tools required. Simply run it.
-
----
-
-## How to Deploy (GitHub Pages)
-
-Since this is a single static HTML file, deploying it to GitHub Pages takes **under 2 minutes**:
-
-1. Go to your repository on GitHub: `https://github.com/muhammadaffan0205/admond-mailing`
-2. Click on **Settings**.
-3. Scroll down to the **Pages** section on the left sidebar.
-4. Under **Branch**, change `None` to `main` (or `master`).
-5. Click **Save**.
-6. Wait 1–2 minutes. Your app will be live at: 
-   `https://muhammadaffan0205.github.io/admond-mailing/`
-
----
-
-## 💻 Local Setup (Run it offline)
-
-1. Download the `index.html` file from this repository.
-2. Double-click the file to open it in your web browser (Chrome, Edge, Firefox, Safari—it works everywhere).
-3. To modify the code, open the file in **Visual Studio Code**, **Atom**, or **Sublime Text**.
-4. *(Optional)* To see the true power of the simulation, simply leave it open in a background tab and watch the live notifications pour in!
-
----
-
-## Contributing
-
-Contributions are what make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📜 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-## 👨‍💻 Author
-
-**Muhammad Affan**  
-[![GitHub](https://img.shields.io/badge/GitHub-%23121011.svg?style=flat&logo=github&logoColor=white)](https://github.com/muhammadaffan0205)
-
----
+## 📸 Interface Preview
 
 <div align="center">
-  <i>Made with ☕ and 💻 for the love of clean UI.</i>
+  <br />
+  <img src="https://raw.githubusercontent.com/muhammadaffan0205/admond-mailing/main/preview.png" alt="Admond Mailing Simulation Screenshot" width="95%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
+  <br />
+  <br />
+  <p><i>Figure 1: Full-screen view showing color-coded avatars, categories, batch action controls, sorting dropdown, and active email count.</i></p>
 </div>
+
+---
+
+## ⚡ Key Highlights
+
+> [!NOTE]
+> **Admond Mailing** is designed as a self-contained webmail client that runs seamlessly directly from your browser—no backend server or npm setup required!
+
+<br />
+
+<table>
+  <tr>
+    <td width="50%">
+      <h3 align="center">🎨 Custom UI Design</h3>
+      <ul>
+        <li><b>Color-Coded Avatars:</b> Automatic initial badges (<code>MT</code>, <code>AK</code>, <code>PU</code>, <code>GC</code>) assigned per sender.</li>
+        <li><b>Dynamic Dark Mode:</b> One-click top menu switcher for low-light environments.</li>
+        <li><b>Responsive Navigation:</b> Integrated count badges for unread emails in the primary view.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3 align="center">🛠️ Functional Depth</h3>
+      <ul>
+        <li><b>Batch Action Toolbar:</b> Quick icons to Star, Delete, or Mark as Read/Unread in one click.</li>
+        <li><b>Dynamic Sorting:</b> Live ordering engine supporting <i>Newest</i>, <i>Oldest</i>, <i>A-Z</i>, and <i>Z-A</i>.</li>
+        <li><b>LocalStorage Sync:</b> Persistence across refreshes for stars, read states, and custom messages.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🧩 Architectural Blueprint
+
+The application follows an **Architecture-in-a-File** model, maintaining a modular layout inside a single HTML file:
