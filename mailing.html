@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admond Mailing Simulation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+                   CSS VARIABLES & DARK MODE
+                   ============================================================ */
+        :root {
+            --bg-body: #f6f8fc;
+            --bg-card: #ffffff;
+            --bg-secondary: #fafbfc;
+            --bg-hover: #f1f3f4;
+            --bg-active: #e8f0fe;
+            --border-color: #e8eaed;
+            --text-primary: #1e293b;
+            --text-secondary: #5f6368;
+            --text-muted: #9aa0a6;
+            --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.03);
+            --shadow-med: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.18);
+            --accent: #1a73e8;
+            --accent-hover: #1557b0;
+            --star-color: #fbbc04;
+            --toast-bg: #1e293b;
+            --toast-text: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #0b0d10;
+            --bg-card: #1a1d21;
+            --bg-secondary: #23272b;
+            --bg-hover: #2c3136;
+            --bg-active: #1a365d;
+            --border-color: #353a40;
+            --text-primary: #e2e8f0;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.5);
+            --shadow-med: 0 4px 12px rgba(0, 0, 0, 0.6);
+            --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.8);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --toast-bg: #f1f5f9;
+            --toast-text: #0f172a;
+        }
+
+        /* ============================================================
+                   RESET & BASE
+                   ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* ============================================================
+                   LOGIN SCREEN
+                   ============================================================ */
+        #loginScreen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-body);
+            position: relative;
+            z-index: 100;
+        }
+
+        #loginScreen .login-card {
+            background: var(--bg-card);
+            padding: 40px 36px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-heavy);
+            width: 360px;
+            max-width: 94%;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        #loginScreen .login-card i {
+            font-size: 44px;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        #loginScreen .login-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        #loginScreen .login-card p.sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        #loginScreen .login-card input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+
+        #loginScreen .login-card input:focus {
+            border-color: var(--accent);
+        }
+
+        #loginScreen .login-card button {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 4px rgba(26, 115, 232, 0.3);
+            font-family: inherit;
+        }
+
+        #loginScreen .login-card button:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 2px 12px rgba(26, 115, 232, 0.4);
+        }
+
+        #loginScreen .login-card .hint {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+                   MAIN APP CONTAINER
+                   ============================================================ */
+        #appMain {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-body);
+        }
+
+        /* ============================================================
+                   HEADER
+                   ============================================================ */
+        .header {
+            background: var(--bg-card);
+            padding: 10px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            height: 68px;
+            box-shadow: var(--shadow-light);
+            z-index: 10;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-left .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-left .logo i {
+            color: #ea4335;
+            font-size: 26px;
+        }
+
+        .header-left .logo .sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-left: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header-right .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-hover);
+            padding: 6px 16px 6px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: background 0.2s;
+            cursor: default;
+        }
+
+        .header-right .user-badge:hover {
+            background: var(--border-color);
+        }
+
+        .header-right .user-badge i {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        .header-right .compose-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 1px 4px rgba(26, 115, 232, 0.3);
+            letter-spacing: 0.2px;
+        }
+
+        .header-right .compose-btn:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 2px 12px rgba(26, 115, 232, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .header-right .compose-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(26, 115, 232, 0.3);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-toggle {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: background 0.2s, transform 0.1s;
+            font-size: 16px;
+        }
+
+        .dark-toggle:hover {
+            background: var(--border-color);
+            transform: scale(1.05);
+        }
+
+        /* ============================================================
+                   APP BODY
+                   ============================================================ */
+        .app-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+                   SIDEBAR
+                   ============================================================ */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            padding: 12px 0 20px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 24px;
+            margin: 1px 10px;
+            border-radius: 0 28px 28px 0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: background 0.15s, color 0.15s;
+            position: relative;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .sidebar-item.active {
+            background: var(--bg-active);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 4px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-item i {
+            width: 22px;
+            font-size: 18px;
+            color: var(--text-secondary);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item.active i {
+            color: var(--accent);
+        }
+
+        .sidebar-item .badge {
+            margin-left: auto;
+            background: var(--bg-active);
+            color: var(--accent);
+            font-size: 12px;
+            padding: 1px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-item .badge.unread {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 20px;
+        }
+
+        .sidebar-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            padding: 12px 24px 6px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+                   MAIN CONTENT
+                   ============================================================ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        /* ============================================================
+                   TOOLBAR
+                   ============================================================ */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            min-height: 52px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left .folder-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+        }
+
+        .toolbar-left .folder-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-left: 10px;
+            border-radius: 8px;
+            background: var(--bg-hover);
+            padding: 2px;
+        }
+
+        .tab-item {
+            padding: 6px 18px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .tab-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+        body.dark-mode .tab-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-item.active {
+            background: var(--bg-card);
+            color: var(--accent);
+            box-shadow: var(--shadow-light);
+            font-weight: 600;
+        }
+
+        /* Bulk Actions & Sorting */
+        .bulk-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-left: 10px;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .bulk-actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .bulk-actions button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .bulk-actions button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Sorting Dropdown */
+        .sort-select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .toolbar-right .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-hover);
+            border-radius: 30px;
+            padding: 4px 16px;
+            border: 1px solid transparent;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            width: 240px;
+            min-width: 120px;
+        }
+
+        .toolbar-right .search-box:focus-within {
+            background: var(--bg-card);
+            border-color: var(--accent);
+            box-shadow: 0 1px 6px rgba(26, 115, 232, 0.12);
+        }
+
+        .toolbar-right .search-box i {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .toolbar-right .search-box input {
+            border: none;
+            background: transparent;
+            padding: 8px 10px;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            color: var(--text-primary);
+            font-family: inherit;
+            min-width: 50px;
+        }
+
+        .toolbar-right .search-box input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* ============================================================
+                   EMAIL LIST
+                   ============================================================ */
+        .email-list-container {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-card);
+            position: relative;
+        }
+
+        .email-list {
+            padding: 0;
+        }
+
+        .email-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.12s, box-shadow 0.12s;
+            gap: 12px;
+            position: relative;
+            user-select: none;
+        }
+
+        .email-item:hover {
+            background: var(--bg-hover);
+            box-shadow: inset 0 0 0 1px var(--border-color);
+        }
+
+        .email-item.unread {
+            background: var(--bg-secondary);
+        }
+
+        .email-item.unread .email-sender {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .email-item.unread .email-subject {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .email-item.selected {
+            background: var(--bg-active);
+            box-shadow: inset 0 0 0 2px var(--accent);
+        }
+
+        .email-item .email-check {
+            margin-right: 4px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .email-item .email-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .email-item .email-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .email-item .email-sender {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-item .email-subject {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-item .email-subject .subject-label {
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .email-item .email-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-item .email-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .email-item .email-star {
+            color: var(--border-color);
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.15s, transform 0.15s;
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            padding: 4px;
+        }
+
+        .email-item .email-star:hover {
+            color: var(--star-color);
+            transform: scale(1.15);
+        }
+
+        .email-item .email-star.starred {
+            color: var(--star-color);
+        }
+
+        .email-item .email-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        /* Load More */
+        .load-more-wrap {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .load-more-btn {
+            padding: 8px 28px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .load-more-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        /* ============================================================
+                   EMPTY STATE
+                   ============================================================ */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            gap: 12px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 52px;
+            color: var(--border-color);
+        }
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .empty-state .sub {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+                   EMAIL DETAIL VIEW
+                   ============================================================ */
+        .email-detail {
+            display: none;
+            flex-direction: column;
+            background: var(--bg-card);
+            height: 100%;
+            overflow: hidden;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .email-detail.visible {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .email-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .email-detail-header .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 50%;
+            transition: background 0.15s;
+        }
+
+        .email-detail-header .back-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .email-detail-header .detail-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .email-detail-header .detail-actions button {
+            background: none;
+            border: 1px solid transparent;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, border-color 0.15s;
+            font-family: inherit;
+        }
+
+        .email-detail-header .detail-actions button:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+        }
+
+        .email-detail-header .detail-actions button.danger:hover {
+            color: #d93025;
+            border-color: #fad2cf;
+            background: #fce8e6;
+        }
+        body.dark-mode .email-detail-header .detail-actions button.danger:hover {
+            background: #3d1a1a;
+            border-color: #6b2a2a;
+        }
+
+        .email-detail-header .detail-actions button.active {
+            background: var(--bg-active);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .email-detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px 40px;
+        }
+
+        .email-detail-body .detail-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .email-detail-body .detail-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 20px;
+            color: #fff;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .email-detail-body .detail-sender {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .email-detail-body .detail-sender-email {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .email-detail-body .detail-cc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .email-detail-body .detail-subject {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 14px 0 4px;
+            letter-spacing: -0.2px;
+        }
+
+        .email-detail-body .detail-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+
+        .email-detail-body .detail-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 16px 0 20px;
+        }
+
+        .email-detail-body .detail-body-text {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* ============================================================
+                   COMPOSE MODAL
+                   ============================================================ */
+        .compose-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.40);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+            animation: overlayIn 0.2s ease;
+        }
+
+        .compose-overlay.open {
+            display: flex;
+        }
+
+        @keyframes overlayIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .compose-modal {
+            background: var(--bg-card);
+            width: 640px;
+            max-width: 96%;
+            border-radius: 20px;
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px) scale(0.96);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .compose-modal .compose-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .compose-modal .compose-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .compose-modal .compose-header h3 i {
+            color: var(--accent);
+        }
+
+        .compose-modal .compose-header .close-compose {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 50%;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+
+        .compose-modal .compose-header .close-compose:hover {
+            background: var(--bg-hover);
+        }
+
+        .compose-modal .compose-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .compose-modal .compose-body .form-group {
+            margin-bottom: 12px;
+        }
+
+        .compose-modal .compose-body .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .compose-modal .compose-body .form-group input,
+        .compose-modal .compose-body .form-group textarea {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .compose-modal .compose-body .form-group input:focus,
+        .compose-modal .compose-body .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.10);
+            background: var(--bg-card);
+        }
+
+        .compose-modal .compose-body .form-group textarea {
+            resize: vertical;
+            min-height: 140px;
+        }
+
+        .compose-modal .compose-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 12px 24px 20px;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .compose-modal .compose-footer .send-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 36px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 1px 4px rgba(26, 115, 232, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .compose-modal .compose-footer .send-btn:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 2px 12px rgba(26, 115, 232, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .compose-modal .compose-footer .cancel-btn {
+            background: transparent;
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+
+        .compose-modal .compose-footer .cancel-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        /* ============================================================
+                   FLOATING NOTIFICATION (POP-UP)
+                   ============================================================ */
+        #notificationContainer {
+            position: fixed;
+            top: 90px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .notif-item {
+            pointer-events: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 6px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow-med);
+            animation: notifIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notif-item.error {
+            border-left-color: #d93025;
+        }
+        .notif-item.success {
+            border-left-color: #34a853;
+        }
+
+        @keyframes notifIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .notif-item .notif-icon {
+            font-size: 24px;
+            margin-top: 2px;
+            color: var(--accent);
+        }
+        .notif-item.success .notif-icon {
+            color: #34a853;
+        }
+        .notif-item.error .notif-icon {
+            color: #d93025;
+        }
+
+        .notif-item .notif-content {
+            flex: 1;
+        }
+        .notif-item .notif-content strong {
+            color: var(--text-primary);
+            display: block;
+            font-size: 14px;
+        }
+        .notif-item .notif-content p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 2px;
+            margin-bottom: 0;
+        }
+        .notif-item .notif-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .notif-item .notif-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+                   RIGHT-CLICK CONTEXT MENU
+                   ============================================================ */
+        #contextMenu {
+            display: none;
+            position: fixed;
+            z-index: 9998;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 0;
+            box-shadow: var(--shadow-heavy);
+            min-width: 180px;
+            overflow: hidden;
+        }
+
+        .ctx-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.1s;
+        }
+
+        .ctx-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .ctx-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
+
+        .ctx-item i {
+            width: 18px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================================
+                   RESPONSIVE (minimal adjustments)
+                   ============================================================ */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 72px;
+                padding: 8px 0;
+            }
+            .sidebar-item {
+                padding: 12px 10px;
+                margin: 2px 6px;
+                border-radius: 50%;
+                justify-content: center;
+                gap: 0;
+                font-size: 0;
+            }
+            .sidebar-item span {
+                display: none;
+            }
+            .sidebar-item .badge {
+                display: none;
+            }
+            .sidebar-item i {
+                font-size: 20px;
+                margin: 0;
+            }
+            .sidebar-label {
+                display: none;
+            }
+            .sidebar-divider {
+                margin: 6px 12px;
+            }
+            .header-left .logo .sub {
+                display: none;
+            }
+            .header-right .user-badge span {
+                display: none;
+            }
+            .header-right .user-badge {
+                padding: 6px 12px;
+            }
+            .header-right .compose-btn span {
+                display: none;
+            }
+            .header-right .compose-btn {
+                padding: 9px 16px;
+            }
+            .tabs {
+                margin-left: 10px;
+            }
+            .tab-item {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            .toolbar-right .search-box {
+                width: 160px;
+            }
+            .email-detail-body {
+                padding: 20px;
+            }
+            .email-detail-body .detail-subject {
+                font-size: 20px;
+            }
+            .bulk-actions {
+                padding-left: 4px;
+                border-left: none;
+            }
+            .bulk-actions button span {
+                display: none;
+            }
+            .sort-select {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                padding: 6px 14px;
+                height: 58px;
+            }
+            .header-left .logo {
+                font-size: 18px;
+            }
+            .header-right .user-badge {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+            .header-right .compose-btn {
+                padding: 7px 12px;
+                font-size: 13px;
+            }
+            .toolbar {
+                padding: 4px 12px;
+                min-height: 44px;
+            }
+            .toolbar-left .folder-title {
+                font-size: 15px;
+            }
+            .tabs {
+                margin-left: 8px;
+                padding: 1px;
+            }
+            .tab-item {
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+            .toolbar-right .search-box {
+                width: 120px;
+                padding: 2px 12px;
+            }
+            .toolbar-right .search-box input {
+                font-size: 13px;
+                padding: 6px 6px;
+            }
+            .email-item {
+                padding: 10px 12px;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .email-item .email-check {
+                width: 16px;
+                height: 16px;
+            }
+            .email-item .email-avatar {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
+            }
+            .email-item .email-meta {
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            .email-item .email-date {
+                font-size: 11px;
+            }
+            .email-detail-body {
+                padding: 16px;
+            }
+            .email-detail-body .detail-subject {
+                font-size: 18px;
+            }
+            .email-detail-body .detail-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .compose-modal {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 14px;
+                height: 100vh;
+                max-height: 100vh;
+            }
+            .compose-modal .compose-header {
+                padding: 14px 18px;
+            }
+            .compose-modal .compose-body {
+                padding: 14px 18px;
+            }
+            .compose-modal .compose-footer {
+                padding: 10px 18px 16px;
+            }
+            #notificationContainer {
+                top: 80px;
+                right: 12px;
+                left: 12px;
+                max-width: none;
+            }
+            #contextMenu {
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    LOGIN SCREEN
+    ============================================================ -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <i class="fas fa-envelope"></i>
+            <h2>ADOMOND MAILING</h2>
+            <p class="sub">Simulation Sign-In</p>
+            <input type="email" id="loginEmail" placeholder="Email" value="michaeladmond74@gmail.com" />
+            <input type="password" id="loginPassword" placeholder="Password" value="password" />
+            <button id="loginBtn">Sign In</button>
+            <p class="hint">DEMO ZONE</p>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MAIN APP CONTAINER
+    ============================================================ -->
+    <div id="appMain">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-envelope"></i>
+                    ADMOND MAILING
+                    <span class="sub">Simulation</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="dark-toggle" id="darkToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span>michaeladmond74@gmail.com</span>
+                </div>
+                <button class="compose-btn" id="composeBtn">
+                    <i class="fas fa-pen"></i>
+                    <span>Compose</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- APP BODY -->
+        <div class="app-body">
+
+            <!-- SIDEBAR -->
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-item active" data-folder="inbox" data-tab="primary">
+                    <i class="fas fa-inbox"></i>
+                    <span>Inbox</span>
+                    <span class="badge unread" id="inboxBadge">0</span>
+                </div>
+                <div class="sidebar-item" data-folder="starred">
+                    <i class="fas fa-star"></i>
+                    <span>Starred</span>
+                </div>
+                <div class="sidebar-item" data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Sent</span>
+                </div>
+                <div class="sidebar-item" data-folder="drafts">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Drafts</span>
+                </div>
+                <div class="sidebar-item" data-folder="trash">
+                    <i class="fas fa-trash"></i>
+                    <span>Trash</span>
+                </div>
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-label">Labels</div>
+                <div class="sidebar-item" data-folder="important">
+                    <i class="fas fa-tag"></i>
+                    <span>Important</span>
+                </div>
+                <div class="sidebar-item" data-folder="social">
+                    <i class="fas fa-users"></i>
+                    <span>Social</span>
+                </div>
+                <div class="sidebar-item" data-folder="promotions">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Promotions</span>
+                </div>
+            </nav>
+
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+
+                <!-- TOOLBAR -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <span class="folder-title" id="folderTitle">Inbox</span>
+                        <span class="folder-count" id="folderCount">(0)</span>
+
+                        <div class="tabs" id="tabContainer">
+                            <button class="tab-item active" data-tab="primary">Primary</button>
+                            <button class="tab-item" data-tab="promotions">Promotions</button>
+                            <button class="tab-item" data-tab="social">Social</button>
+                        </div>
+
+                        <div class="bulk-actions" id="bulkActions">
+                            <button id="bulkStar" title="Star Selected"><i class="fas fa-star"></i></button>
+                            <button id="bulkDelete" title="Delete Selected"><i class="fas fa-trash"></i></button>
+                            <button id="bulkRead" title="Mark Selected Read"><i class="fas fa-envelope-open"></i></button>
+                            <button id="bulkUnread" title="Mark Selected Unread"><i class="fas fa-envelope"></i></button>
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="sort-select" id="sortSelect">
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="az">A-Z</option>
+                            <option value="za">Z-A</option>
+                        </select>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search in mail…" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMAIL LIST -->
+                <div class="email-list-container">
+                    <div class="email-list" id="emailList">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- EMAIL DETAIL -->
+                <div class="email-detail" id="emailDetail">
+                    <div class="email-detail-header">
+                        <button class="back-btn" id="detailBack"><i class="fas fa-arrow-left"></i></button>
+                        <div class="detail-actions">
+                            <button id="detailReply"><i class="fas fa-reply"></i> Reply</button>
+                            <button id="detailReplyAll"><i class="fas fa-reply-all"></i> Reply All</button>
+                            <button id="detailForward"><i class="fas fa-forward"></i> Forward</button>
+                            <button id="detailStar"><i class="far fa-star"></i> Star</button>
+                            <button id="detailImportant" class="detail-important"><i class="fas fa-tag"></i> Important</button>
+                            <button id="detailSocial" class="detail-social"><i class="fas fa-users"></i> Social</button>
+                            <button id="detailPromotions" class="detail-promotions"><i class="fas fa-bullhorn"></i> Promotions</button>
+                            <button class="danger" id="detailDelete"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                    <div class="email-detail-body" id="detailBody">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    COMPOSE MODAL
+    ============================================================ -->
+    <div class="compose-overlay" id="composeOverlay">
+        <div class="compose-modal">
+            <div class="compose-header">
+                <h3><i class="fas fa-pen"></i> <span id="composeTitle">New Message</span></h3>
+                <button class="close-compose" id="closeCompose">&times;</button>
+            </div>
+            <div class="compose-body">
+                <div class="form-group">
+                    <label>To</label>
+                    <input type="email" id="composeTo" placeholder="recipient@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>CC</label>
+                    <input type="email" id="composeCc" placeholder="cc@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>BCC</label>
+                    <input type="email" id="composeBcc" placeholder="bcc@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="composeSubject" placeholder="Subject" />
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="composeBody" placeholder="Write your message here…"></textarea>
+                </div>
+            </div>
+            <div class="compose-footer">
+                <button class="cancel-btn" id="cancelCompose">Cancel</button>
+                <button class="send-btn" id="sendCompose"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    RIGHT CLICK CONTEXT MENU
+    ============================================================ -->
+    <div id="contextMenu">
+        <div class="ctx-item" data-action="star"><i class="fas fa-star"></i> Star</div>
+        <div class="ctx-item" data-action="delete"><i class="fas fa-trash"></i> Delete</div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" data-action="important"><i class="fas fa-tag"></i> Move to Important</div>
+        <div class="ctx-item" data-action="social"><i class="fas fa-users"></i> Move to Social</div>
+        <div class="ctx-item" data-action="promotions"><i class="fas fa-bullhorn"></i> Move to Promotions</div>
+    </div>
+
+    <!-- ============================================================
+    NOTIFICATION CONTAINER
+    ============================================================ -->
+    <div id="notificationContainer"></div>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // 1. DATA SCHEMA & FACTORY
+            // ============================================================
+
+            let nextId = Date.now();
+
+            function generateId() {
+                return (nextId++).toString(36) + '-' + Date.now().toString(36);
+            }
+
+            function createEmail(sender, subject, body, folder = 'inbox', tab = 'primary', important = false, cc = null,
+                bcc = null) {
+                return {
+                    id: generateId(),
+                    sender: sender,
+                    subject: subject,
+                    body: body,
+                    cc: cc || '',
+                    bcc: bcc || '',
+                    date: new Date().toISOString(),
+                    read: false,
+                    starred: false,
+                    folder: folder,
+                    tab: tab,
+                    important: important,
+                    senderName: sender.split('@')[0],
+                };
+            }
+
+            // ============================================================
+            // 2. MOCK DATA GENERATION
+            // ============================================================
+
+            function generateMockData() {
+                const mockSenders = [
+                    { name: 'Sarah Jenkins', email: 'sarah.jenkins@design.studio' },
+                    { name: 'Google Cloud', email: 'cloud-billing@google.com' },
+                    { name: 'Marketing Newsletter', email: 'marketing@growth.co' },
+                    { name: 'David Chen', email: 'david.chen@techcorp.io' },
+                    { name: 'Alice Kim', email: 'alice.kim@startup.xyz' },
+                    { name: 'Product Updates', email: 'updates@productlab.com' },
+                    { name: 'HR Team', email: 'hr@company.com' },
+                    { name: 'GitHub', email: 'noreply@github.com' },
+                    { name: 'Figma', email: 'updates@figma.com' },
+                    { name: 'Slack', email: 'notifications@slack.com' },
+                    { name: 'Design System Bot', email: 'ds-bot@design.studio' },
+                    { name: 'Meet Team', email: 'meet@google.com' },
+                    { name: 'Chat Notifications', email: 'chat@company.com' },
+                    { name: 'Mall Deals', email: 'deals@mall.com' },
+                ];
+                const mockSubjects = [
+                    'Q3 Design System Updates & Final Sync', 'Your billing statement is ready',
+                    'Top 10 strategies for Q2 growth', 'Frontend architecture review feedback',
+                    'Weekly sync agenda — please review', 'Security patch deployment scheduled',
+                    'New benefits package overview', 'Your repository has been archived',
+                    'Figma — team library updates', 'Slack workspace notification digest',
+                    'Design tokens migration complete', 'Meet: schedule for next week',
+                    'Chat: new message from Alice', 'Mall: your order has shipped'
+                ];
+                const mockBodies = [
+                    `Hi Team,\n\nI hope you're all having a productive week. I wanted to share the latest updates to our shared component library ahead of our sync tomorrow.\n\nWe've successfully merged the new **Tonal Elevation** tokens into the main branch. You should now be using \`surface-container-low\` through \`surface-container-highest\` instead of relying on arbitrary opacity layers for cards and dialogs.\n\nKey Action Items for Q3:\n• Audit existing FAB implementations.\n• Update all navigation drawers.\n• Review the new typographic scale mappings.`,
+                    `Your monthly statement for project 'product-dashboard' is now available. Total usage: $142.39.\n\nView details: https://console.cloud.google.com/billing\n\n— Google Cloud Billing`,
+                    `Discover how leading brands are optimizing their Q2 strategies with these 10 proven tactics. From AI-driven personalization to sustainable packaging.\n\nRead the full article →`,
+                    `Thanks for the detailed proposal. I've left some comments on the architecture diagram. Overall, the separation of concerns looks solid. Let's circle back on the caching layer.\n\nBest,\nDavid`,
+                    `Agenda for tomorrow's sync:\n1. Q3 milestone review\n2. Design system adoption metrics\n3. Open floor for blockers\n\nSee you at 10 AM.`,
+                    `A critical security patch has been scheduled for deployment this Friday at 2 AM UTC. Please ensure all services are ready for a rolling update.\n\n— Security Team`,
+                    `We're excited to announce the new benefits package for 2025. Key changes include expanded mental health coverage and a new wellness stipend.\n\nReview the full details in the attached PDF.`
+                ];
+
+                function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+                function randomDate(daysBack = 60) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - Math.floor(Math.random() * daysBack));
+                    d.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+                    return d.toISOString();
+                }
+
+                function getTabForSender(email) {
+                    const lower = email.toLowerCase();
+                    if (lower.includes('google') || lower.includes('github') || lower.includes('figma') || lower.includes(
+                            'slack')) return 'primary';
+                    if (lower.includes('marketing') || lower.includes('deals') || lower.includes('mall')) return 'promotions';
+                    if (lower.includes('chat') || lower.includes('meet') || lower.includes('social')) return 'social';
+                    return 'primary';
+                }
+
+                const mockEmails = [];
+                for (let i = 0; i < 30; i++) {
+                    const s = getRandom(mockSenders);
+                    const email = createEmail(s.email, getRandom(mockSubjects), getRandom(mockBodies), 'inbox',
+                        getTabForSender(s.email), Math.random() > 0.75);
+                    email.date = randomDate(45);
+                    email.read = Math.random() > 0.45;
+                    email.starred = Math.random() > 0.82;
+                    email.senderName = s.name;
+                    mockEmails.push(email);
+                }
+
+                // Add sent
+                for (let i = 0; i < 6; i++) {
+                    const email = createEmail('michaeladmond74@gmail.com', 'Re: ' + getRandom(mockSubjects),
+                        getRandom(mockBodies), 'sent', 'primary', false);
+                    email.date = randomDate(20);
+                    email.read = true;
+                    email.senderName = 'Michael Admond';
+                    mockEmails.push(email);
+                }
+                // Drafts
+                for (let i = 0; i < 4; i++) {
+                    const email = createEmail('michaeladmond74@gmail.com', 'Draft: ' + getRandom(mockSubjects),
+                        getRandom(mockBodies), 'drafts', 'primary', false);
+                    email.date = randomDate(8);
+                    email.read = true;
+                    email.senderName = 'Michael Admond';
+                    mockEmails.push(email);
+                }
+                // Social/Promotions extra
+                const extra = [
+                    { email: 'meet@google.com', name: 'Meet Team', tab: 'social' },
+                    { email: 'slack@notify.com', name: 'Slack', tab: 'social' },
+                    { email: 'deals@mall.com', name: 'Mall', tab: 'promotions' },
+                    { email: 'promo@store.com', name: 'Store', tab: 'promotions' }
+                ];
+                for (const e of extra) {
+                    const email = createEmail(e.email, 'Update: ' + getRandom(mockSubjects), getRandom(mockBodies),
+                        'inbox', e.tab, false);
+                    email.date = randomDate(30);
+                    email.read = Math.random() > 0.4;
+                    email.senderName = e.name;
+                    email.starred = Math.random() > 0.85;
+                    mockEmails.push(email);
+                }
+                return mockEmails;
+            }
+
+            // ============================================================
+            // 3. PERSISTENCE (LocalStorage)
+            // ============================================================
+
+            function saveState() {
+                try {
+                    localStorage.setItem('admond_emails', JSON.stringify(emails));
+                    localStorage.setItem('admond_darkmode', JSON.stringify(isDarkMode));
+                } catch (e) { console.warn('Could not save state'); }
+            }
+
+            function loadState() {
+                try {
+                    const data = localStorage.getItem('admond_emails');
+                    const dark = localStorage.getItem('admond_darkmode');
+                    if (dark) isDarkMode = JSON.parse(dark);
+                    if (data) return JSON.parse(data);
+                } catch (e) { console.warn('Could not load state'); }
+                return null;
+            }
+
+            // ============================================================
+            // 4. STATE
+            // ============================================================
+
+            let emails = loadState() || generateMockData();
+            let isDarkMode = false; // will be loaded
+            let currentFolder = 'inbox';
+            let currentTab = 'primary';
+            let selectedEmailId = null;
+            let searchQuery = '';
+            let sortBy = 'newest';
+            let selectedCheckboxIds = new Set();
+            let currentPage = 1;
+            const PAGE_SIZE = 15;
+            let contextEmailId = null;
+            let incomingInterval = null;
+
+            // ============================================================
+            // 5. DOM REFS
+            // ============================================================
+
+            const emailListEl = document.getElementById('emailList');
+            const emailDetailEl = document.getElementById('emailDetail');
+            const detailBodyEl = document.getElementById('detailBody');
+            const folderTitle = document.getElementById('folderTitle');
+            const folderCount = document.getElementById('folderCount');
+            const searchInput = document.getElementById('searchInput');
+            const sortSelect = document.getElementById('sortSelect');
+            const inboxBadge = document.getElementById('inboxBadge');
+            const darkToggle = document.getElementById('darkToggle');
+
+            const composeOverlay = document.getElementById('composeOverlay');
+            const composeTitle = document.getElementById('composeTitle');
+            const composeBtn = document.getElementById('composeBtn');
+            const closeCompose = document.getElementById('closeCompose');
+            const cancelCompose = document.getElementById('cancelCompose');
+            const sendCompose = document.getElementById('sendCompose');
+            const composeTo = document.getElementById('composeTo');
+            const composeCc = document.getElementById('composeCc');
+            const composeBcc = document.getElementById('composeBcc');
+            const composeSubject = document.getElementById('composeSubject');
+            const composeBody = document.getElementById('composeBody');
+
+            const detailBack = document.getElementById('detailBack');
+            const detailReply = document.getElementById('detailReply');
+            const detailReplyAll = document.getElementById('detailReplyAll');
+            const detailForward = document.getElementById('detailForward');
+            const detailDelete = document.getElementById('detailDelete');
+            const detailStar = document.getElementById('detailStar');
+            const detailImportant = document.getElementById('detailImportant');
+            const detailSocial = document.getElementById('detailSocial');
+            const detailPromotions = document.getElementById('detailPromotions');
+
+            const sidebarItems = document.querySelectorAll('.sidebar-item[data-folder]');
+            const tabItems = document.querySelectorAll('.tab-item');
+
+            const contextMenu = document.getElementById('contextMenu');
+            const notifContainer = document.getElementById('notificationContainer');
+
+            const bulkStar = document.getElementById('bulkStar');
+            const bulkDelete = document.getElementById('bulkDelete');
+            const bulkRead = document.getElementById('bulkRead');
+            const bulkUnread = document.getElementById('bulkUnread');
+
+            // ============================================================
+            // 6. UTILITIES
+            // ============================================================
+
+            function getFilteredEmails() {
+                let list;
+                if (currentFolder === 'starred') list = emails.filter(e => e.starred);
+                else if (currentFolder === 'important') list = emails.filter(e => e.important);
+                else if (currentFolder === 'social') list = emails.filter(e => e.tab === 'social');
+                else if (currentFolder === 'promotions') list = emails.filter(e => e.tab === 'promotions');
+                else list = emails.filter(e => e.folder === currentFolder);
+
+                if (currentFolder === 'inbox') list = list.filter(e => e.tab === currentTab);
+
+                const query = searchQuery.trim();
+                if (query) {
+                    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                    list = list.filter(e => regex.test(e.sender) || regex.test(e.subject) || regex.test(e.body));
+                }
+
+                // Sorting
+                if (sortBy === 'newest') list.sort((a, b) => new Date(b.date) - new Date(a.date));
+                else if (sortBy === 'oldest') list.sort((a, b) => new Date(a.date) - new Date(b.date));
+                else if (sortBy === 'az') list.sort((a, b) => a.subject.localeCompare(b.subject));
+                else if (sortBy === 'za') list.sort((a, b) => b.subject.localeCompare(a.subject));
+
+                return list;
+            }
+
+            function getUnreadCount() {
+                return emails.filter(e => e.folder === 'inbox' && !e.read).length;
+            }
+
+            function formatDate(iso) {
+                const d = new Date(iso);
+                const now = new Date();
+                const diff = (now - d) / 1000 / 60 / 60 / 24;
+                if (diff < 1) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                if (diff < 7) return d.toLocaleDateString([], { weekday: 'short' });
+                return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+
+            function getInitials(name) {
+                if (!name) return '?';
+                const parts = name.split(/[ ._-]/);
+                if (parts.length >= 2 && parts[0].length > 0 && parts[1].length > 0) return (parts[0][0] + parts[1][0])
+                    .toUpperCase();
+                return name.substring(0, 2).toUpperCase();
+            }
+
+            function getDisplayName(email) {
+                if (email.senderName) return email.senderName;
+                return email.sender.split('@')[0].replace(/[._-]/g, ' ');
+            }
+
+            function getAvatarColor(email) {
+                const colors = ['#1a73e8', '#e8710a', '#0d652d', '#c5221f', '#9334e6', '#e37400', '#188038', '#d93025',
+                    '#1967d2', '#6f42c1', '#0b8043', '#e52592', '#fa7b17', '#1e8e3e', '#b31412'
+                ];
+                let hash = 0;
+                for (let i = 0; i < email.sender.length; i++) hash = email.sender.charCodeAt(i) + ((hash << 5) - hash);
+                return colors[Math.abs(hash) % colors.length];
+            }
+
+            // ============================================================
+            // 7. NOTIFICATIONS
+            // ============================================================
+
+            function showNotification(title, message, type = 'info') {
+                const iconMap = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-bell' };
+                const colorMap = { success: '#34a853', error: '#d93025', info: '#1a73e8' };
+
+                const el = document.createElement('div');
+                el.className = `notif-item ${type}`;
+                el.innerHTML = `
+                    <div class="notif-icon"><i class="fas ${iconMap[type] || 'fa-bell'}" style="color: ${colorMap[type] || '#1a73e8'}"></i></div>
+                    <div class="notif-content">
+                        <strong>${title}</strong>
+                        <p>${message}</p>
+                    </div>
+                    <button class="notif-close">&times;</button>
+                `;
+                el.querySelector('.notif-close').addEventListener('click', () => el.remove());
+                notifContainer.appendChild(el);
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (el.parentNode) el.remove();
+                }, 5000);
+            }
+
+            // Incoming Mail Simulation
+            function startIncomingSimulation() {
+                if (incomingInterval) clearInterval(incomingInterval);
+                incomingInterval = setInterval(() => {
+                    const names = ['Alice Kim', 'Google Cloud', 'Sarah Jenkins', 'David Chen', 'Figma', 'Slack'];
+                    const sender = names[Math.floor(Math.random() * names.length)];
+                    const email = sender.toLowerCase().replace(/ /g, '.') + '@example.com';
+                    const subjects = ['Quick question', 'Project update', 'Meeting invite', 'Thanks!',
+                        'Please review this'
+                    ];
+                    const newEmail = createEmail(
+                        email,
+                        subjects[Math.floor(Math.random() * subjects.length)],
+                        'Hello,\n\nJust checking in on the latest progress.\n\nBest,\n' + sender,
+                        'inbox',
+                        'primary',
+                        false
+                    );
+                    newEmail.senderName = sender;
+                    newEmail.date = new Date().toISOString();
+                    emails.push(newEmail);
+                    saveState();
+                    render();
+                    showNotification('📨 New Email', `You have a new message from ${sender}`, 'info');
+                }, 30000 + Math.random() * 20000); // 30-50 seconds
+            }
+
+            // ============================================================
+            // 8. RENDER
+            // ============================================================
+
+            function render() {
+                const allFiltered = getFilteredEmails();
+                const count = allFiltered.length;
+                const displayList = allFiltered.slice(0, currentPage * PAGE_SIZE);
+
+                folderTitle.textContent = currentFolder.charAt(0).toUpperCase() + currentFolder.slice(1);
+                folderCount.textContent = `(${count})`;
+
+                const unread = getUnreadCount();
+                inboxBadge.textContent = unread;
+                inboxBadge.classList.toggle('unread', unread > 0);
+
+                sidebarItems.forEach(el => el.classList.toggle('active', el.dataset.folder === currentFolder));
+                tabItems.forEach(el => el.classList.toggle('active', el.dataset.tab === currentTab));
+                document.getElementById('tabContainer').style.display = (currentFolder === 'inbox') ? 'flex' : 'none';
+
+                // Update check all status
+                const selectAllEl = document.getElementById('selectAllCheck');
+                if (selectAllEl) {
+                    selectAllEl.checked = displayList.length > 0 && displayList.every(e => selectedCheckboxIds.has(e.id));
+                }
+
+                if (count === 0) {
+                    emailListEl.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No emails in ${currentFolder}</p>
+                            <span class="sub">${searchQuery ? 'Try a different search term.' : 'All clear!'}</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                for (const email of displayList) {
+                    const unreadClass = !email.read && currentFolder === 'inbox' ? 'unread' : '';
+                    const selectedClass = (selectedEmailId === email.id) ? 'selected' : '';
+                    const starClass = email.starred ? 'starred' : '';
+                    const isChecked = selectedCheckboxIds.has(email.id) ? 'checked' : '';
+                    const avatarColor = getAvatarColor(email);
+                    const initials = getInitials(getDisplayName(email));
+                    const preview = email.body.split('\n')[0] || 'No preview';
+                    const displayName = getDisplayName(email);
+
+                    html += `
+                        <div class="email-item ${unreadClass} ${selectedClass}" data-id="${email.id}">
+                            <input type="checkbox" class="email-check" data-id="${email.id}" ${isChecked} />
+                            <div class="email-avatar" style="background:${avatarColor};">${initials}</div>
+                            <div class="email-info">
+                                <div class="email-sender">${displayName}</div>
+                                <div class="email-subject">
+                                    ${email.subject}
+                                    <span class="subject-label">—</span>
+                                    <span class="email-preview">${preview}</span>
+                                </div>
+                            </div>
+                            <div class="email-meta">
+                                <button class="email-star ${starClass}" data-id="${email.id}" data-action="star">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <span class="email-date">${formatDate(email.date)}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                // Add Select All checkbox at top
+                html = `
+                    <div class="email-item" style="cursor:default; background:var(--bg-secondary); border-bottom: 2px solid var(--border-color); padding: 8px 20px;">
+                        <input type="checkbox" id="selectAllCheck" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer;" />
+                        <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Select All</span>
+                    </div>
+                ` + html;
+
+                // Load More Button
+                if (count > currentPage * PAGE_SIZE) {
+                    html += `
+                        <div class="load-more-wrap">
+                            <button class="load-more-btn" id="loadMoreBtn">Load More (${count - currentPage * PAGE_SIZE} remaining)</button>
+                        </div>
+                    `;
+                }
+
+                emailListEl.innerHTML = html;
+
+                // Bind Select All
+                document.getElementById('selectAllCheck')?.addEventListener('change', (e) => {
+                    const allIds = displayList.map(el => el.id);
+                    if (e.target.checked) {
+                        allIds.forEach(id => selectedCheckboxIds.add(id));
+                    } else {
+                        allIds.forEach(id => selectedCheckboxIds.delete(id));
+                    }
+                    render();
+                });
+            }
+
+            function renderDetail(email) {
+                if (!email) { emailDetailEl.classList.remove('visible'); return; }
+
+                emailDetailEl.classList.add('visible');
+                const displayName = getDisplayName(email);
+                const avatarColor = getAvatarColor(email);
+                const initials = getInitials(displayName);
+                const dateStr = new Date(email.date).toLocaleString('en-US', {
+                    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                if (!email.read && email.folder === 'inbox') { email.read = true;
+                    render();
+                    saveState(); }
+
+                let bodyHtml = email.body
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/`(.*?)`/g, '<span class="inline-tag">$1</span>')
+                    .replace(/^---$/gm, '<hr class="divider-light" />')
+                    .replace(/^• /gm, '<li>')
+                    .replace(/^\d+\. /gm, '<li>');
+                if (bodyHtml.includes('<li>')) {
+                    const lines = bodyHtml.split('\n');
+                    let inList = false,
+                        processed = [];
+                    for (let line of lines) {
+                        if (line.startsWith('<li>')) { if (!inList) { processed.push('<ul class="action-list">');
+                                inList = true; } processed.push(line); } else { if (inList) { processed.push(
+                                '</ul>');
+                                inList = false; } processed.push(line); }
+                    }
+                    if (inList) processed.push('</ul>');
+                    bodyHtml = processed.join('\n');
+                }
+                bodyHtml = bodyHtml.replace(/\n/g, '<br />');
+
+                const starIcon = email.starred ? 'fas fa-star' : 'far fa-star';
+                const starColor = email.starred ? '#fbbc04' : 'var(--text-secondary)';
+
+                detailBodyEl.innerHTML = `
+                    <div class="detail-avatar-row">
+                        <div class="detail-avatar" style="background:${avatarColor};">${initials}</div>
+                        <div>
+                            <div class="detail-sender">${displayName}</div>
+                            <div class="detail-sender-email">${email.sender}</div>
+                            ${email.cc ? `<div class="detail-cc">CC: ${email.cc}</div>` : ''}
+                            ${email.bcc ? `<div class="detail-cc">BCC: ${email.bcc}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="detail-subject">${email.subject}</div>
+                    <div class="detail-date">${dateStr}</div>
+                    <hr class="detail-divider" />
+                    <div class="detail-body-text">${bodyHtml}</div>
+                `;
+
+                document.getElementById('detailStar').innerHTML =
+                    `<i class="${starIcon}" style="color:${starColor};"></i> ${email.starred ? 'Unstar' : 'Star'}`;
+
+                detailImportant.className = 'detail-important' + (email.important ? ' active' : '');
+                detailImportant.innerHTML =
+                    `<i class="fas fa-tag"></i> ${email.important ? 'Important ✓' : 'Important'}`;
+                detailSocial.className = 'detail-social' + (email.tab === 'social' ? ' active' : '');
+                detailSocial.innerHTML =
+                    `<i class="fas fa-users"></i> ${email.tab === 'social' ? 'Social ✓' : 'Social'}`;
+                detailPromotions.className = 'detail-promotions' + (email.tab === 'promotions' ? ' active' : '');
+                detailPromotions.innerHTML =
+                    `<i class="fas fa-bullhorn"></i> ${email.tab === 'promotions' ? 'Promotions ✓' : 'Promotions'}`;
+            }
+
+            function openDetail(id) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                selectedEmailId = id;
+                renderDetail(email);
+                render();
+            }
+
+            function closeDetail() {
+                selectedEmailId = null;
+                emailDetailEl.classList.remove('visible');
+                render();
+            }
+
+            // ============================================================
+            // 9. ACTIONS
+            // ============================================================
+
+            function deleteEmail(id) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                if (email.folder === 'trash') { emails = emails.filter(e => e.id !== id);
+                    showNotification('Deleted', 'Permanently removed.', 'error'); } else { email.folder = 'trash';
+                    email.read = true;
+                    showNotification('Moved to Trash', 'Email has been moved.', 'info'); }
+                if (selectedEmailId === id) closeDetail();
+                saveState();
+                render();
+            }
+
+            function toggleStar(id) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                email.starred = !email.starred;
+                saveState();
+                render();
+                if (selectedEmailId === id) renderDetail(email);
+                showNotification(email.starred ? 'Starred' : 'Unstarred', '', 'info');
+            }
+
+            function toggleImportant(id) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                email.important = !email.important;
+                saveState();
+                render();
+                if (selectedEmailId === id) renderDetail(email);
+                showNotification(email.important ? 'Marked Important' : 'Unmarked Important', '', 'info');
+            }
+
+            function setEmailTab(id, tab) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                email.tab = tab;
+                saveState();
+                render();
+                if (selectedEmailId === id) renderDetail(email);
+                showNotification(`Moved to ${tab.charAt(0).toUpperCase() + tab.slice(1)}`, '', 'success');
+            }
+
+            function openCompose(subject, to, body, cc, bcc, mode = 'New Message') {
+                composeTitle.textContent = mode;
+                composeTo.value = to || '';
+                composeCc.value = cc || '';
+                composeBcc.value = bcc || '';
+                composeSubject.value = subject || '';
+                composeBody.value = body || '';
+                composeOverlay.classList.add('open');
+            }
+
+            function sendEmail() {
+                const to = composeTo.value.trim();
+                const cc = composeCc.value.trim();
+                const bcc = composeBcc.value.trim();
+                const subject = composeSubject.value.trim();
+                const body = composeBody.value.trim();
+
+                if (!to || !subject || !body) { showNotification('Error', 'Please fill in all required fields.',
+                        'error'); return; }
+                if (!to.includes('@')) { showNotification('Error', 'Invalid email address.', 'error'); return; }
+
+                // Sent
+                const sentEmail = createEmail('michaeladmond74@gmail.com', subject, body, 'sent', 'primary', false, cc,
+                bcc);
+                sentEmail.senderName = 'Michael Admond';
+                sentEmail.read = true;
+                emails.push(sentEmail);
+
+                // Inbox copy
+                const inboxEmail = createEmail(to, subject, body, 'inbox', 'primary', false, cc, bcc);
+                inboxEmail.senderName = to.split('@')[0];
+                inboxEmail.read = false;
+                emails.push(inboxEmail);
+
+                composeOverlay.classList.remove('open');
+                saveState();
+                render();
+
+                showNotification('✅ Email Sent', `Your message has been delivered to ${to}.`, 'success');
+            }
+
+            // Bulk Actions
+            function getSelectedEmails() {
+                return emails.filter(e => selectedCheckboxIds.has(e.id));
+            }
+
+            function performBulkAction(action) {
+                const selected = getSelectedEmails();
+                if (selected.length === 0) { showNotification('No Selection', 'Please select at least one email.',
+                        'warning'); return; }
+
+                if (action === 'delete') {
+                    selected.forEach(e => {
+                        if (e.folder === 'trash') emails = emails.filter(m => m.id !== e.id);
+                        else { e.folder = 'trash';
+                            e.read = true; }
+                    });
+                    if (selected.some(e => e.id === selectedEmailId)) closeDetail();
+                    showNotification(`Deleted ${selected.length} emails`, '', 'warning');
+                } else if (action === 'star') {
+                    selected.forEach(e => e.starred = !e.starred);
+                    showNotification(`Toggled star on ${selected.length} emails`, '', 'info');
+                } else if (action === 'read') {
+                    selected.forEach(e => { e.read = true; });
+                    showNotification(`Marked ${selected.length} as read`, '', 'success');
+                } else if (action === 'unread') {
+                    selected.forEach(e => { e.read = false; });
+                    showNotification(`Marked ${selected.length} as unread`, '', 'info');
+                }
+                selectedCheckboxIds.clear();
+                saveState();
+                render();
+                if (selectedEmailId && !emails.find(e => e.id === selectedEmailId)) closeDetail();
+                else if (selectedEmailId) renderDetail(emails.find(e => e.id === selectedEmailId));
+            }
+
+            // Reply / Reply All / Forward
+            function composeReply(id, mode) {
+                const email = emails.find(e => e.id === id);
+                if (!email) return;
+                let to = email.sender;
+                let cc = '';
+                let subject = 'Re: ' + email.subject;
+                let body = `\n\n\n--- Original ---\nFrom: ${email.sender}\nDate: ${new Date(email.date).toLocaleString()}\nSubject: ${email.subject}\n\n${email.body}`;
+
+                if (mode === 'reply_all') {
+                    cc = 'mock-cc@example.com'; // Simulated CC
+                    to = email.sender + ', mock-cc@example.com';
+                } else if (mode === 'forward') {
+                    subject = 'Fwd: ' + email.subject;
+                    to = '';
+                    cc = '';
+                    body = `\n\n\n--- Forwarded ---\nFrom: ${email.sender}\nDate: ${new Date(email.date).toLocaleString()}\nSubject: ${email.subject}\n\n${email.body}`;
+                }
+                openCompose(subject, to, body, cc, '', mode.charAt(0).toUpperCase() + mode.slice(1));
+            }
+
+            // ============================================================
+            // 10. EVENT BINDING
+            // ============================================================
+
+            // --- Email list ---
+            emailListEl.addEventListener('click', (e) => {
+                const item = e.target.closest('.email-item');
+                if (!item) return;
+                const id = item.dataset.id;
+
+                const check = e.target.closest('.email-check');
+                if (check) {
+                    if (selectedCheckboxIds.has(id)) selectedCheckboxIds.delete(id);
+                    else selectedCheckboxIds.add(id);
+                    render();
+                    return;
+                }
+
+                const starBtn = e.target.closest('.email-star');
+                if (starBtn) { toggleStar(id); return; }
+
+                if (id) openDetail(id);
+            });
+
+            // --- Right Click Context ---
+            document.addEventListener('contextmenu', (e) => {
+                const item = e.target.closest('.email-item');
+                if (!item || !item.dataset.id) return;
+                e.preventDefault();
+                contextEmailId = item.dataset.id;
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = e.clientX + 'px';
+                contextMenu.style.top = e.clientY + 'px';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) contextMenu.style.display = 'none';
+            });
+
+            contextMenu.addEventListener('click', (e) => {
+                const ctxItem = e.target.closest('.ctx-item');
+                if (!ctxItem || !contextEmailId) return;
+                const action = ctxItem.dataset.action;
+                if (action === 'star') toggleStar(contextEmailId);
+                else if (action === 'delete') deleteEmail(contextEmailId);
+                else if (action === 'important') toggleImportant(contextEmailId);
+                else if (action === 'social') setEmailTab(contextEmailId, 'social');
+                else if (action === 'promotions') setEmailTab(contextEmailId, 'promotions');
+                contextMenu.style.display = 'none';
+            });
+
+            // --- Sidebar ---
+            sidebarItems.forEach(el => {
+                el.addEventListener('click', () => {
+                    const folder = el.dataset.folder;
+                    if (folder && folder !== currentFolder) {
+                        currentFolder = folder;
+                        currentTab = (folder === 'inbox') ? 'primary' : 'primary';
+                        currentPage = 1;
+                        selectedEmailId = null;
+                        searchQuery = '';
+                        searchInput.value = '';
+                        selectedCheckboxIds.clear();
+                        closeDetail();
+                        render();
+                    }
+                });
+            });
+
+            // --- Tabs ---
+            tabItems.forEach(el => {
+                el.addEventListener('click', () => {
+                    const tab = el.dataset.tab;
+                    if (tab && tab !== currentTab && currentFolder === 'inbox') {
+                        currentTab = tab;
+                        currentPage = 1;
+                        selectedEmailId = null;
+                        selectedCheckboxIds.clear();
+                        closeDetail();
+                        render();
+                    }
+                });
+            });
+
+            // --- Search & Sort ---
+            searchInput.addEventListener('input', () => {
+                searchQuery = searchInput.value;
+                currentPage = 1;
+                selectedEmailId = null;
+                selectedCheckboxIds.clear();
+                closeDetail();
+                render();
+            });
+
+            sortSelect.addEventListener('change', () => {
+                sortBy = sortSelect.value;
+                currentPage = 1;
+                render();
+            });
+
+            // --- Load More ---
+            document.addEventListener('click', (e) => {
+                if (e.target.id === 'loadMoreBtn') {
+                    currentPage++;
+                    render();
+                }
+            });
+
+            // --- Detail actions ---
+            detailBack.addEventListener('click', closeDetail);
+
+            detailDelete.addEventListener('click', () => {
+                if (selectedEmailId) { deleteEmail(selectedEmailId); if (!emails.find(e => e.id === selectedEmailId))
+                        closeDetail(); }
+            });
+
+            detailStar.addEventListener('click', () => { if (selectedEmailId) toggleStar(selectedEmailId); });
+            detailReply.addEventListener('click', () => { if (selectedEmailId) composeReply(selectedEmailId, 'reply'); });
+            detailReplyAll.addEventListener('click', () => { if (selectedEmailId) composeReply(selectedEmailId,
+                    'reply_all'); });
+            detailForward.addEventListener('click', () => { if (selectedEmailId) composeReply(selectedEmailId,
+                    'forward'); });
+            detailImportant.addEventListener('click', () => { if (selectedEmailId) toggleImportant(selectedEmailId); });
+            detailSocial.addEventListener('click', () => { if (selectedEmailId) setEmailTab(selectedEmailId, 'social'); });
+            detailPromotions.addEventListener('click', () => { if (selectedEmailId) setEmailTab(selectedEmailId,
+                    'promotions'); });
+
+            // --- Bulk Actions ---
+            bulkDelete.addEventListener('click', () => performBulkAction('delete'));
+            bulkStar.addEventListener('click', () => performBulkAction('star'));
+            bulkRead.addEventListener('click', () => performBulkAction('read'));
+            bulkUnread.addEventListener('click', () => performBulkAction('unread'));
+
+            // --- Compose ---
+            composeBtn.addEventListener('click', () => openCompose('', '', '', '', '', 'New Message'));
+            closeCompose.addEventListener('click', () => composeOverlay.classList.remove('open'));
+            cancelCompose.addEventListener('click', () => composeOverlay.classList.remove('open'));
+            composeOverlay.addEventListener('click', (e) => { if (e.target === composeOverlay) composeOverlay.classList
+                    .remove('open'); });
+            sendCompose.addEventListener('click', sendEmail);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') composeOverlay.classList.remove('open');
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    if (composeOverlay.classList.contains('open')) sendEmail();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault();
+                    searchInput.focus(); }
+            });
+
+            // --- Dark Mode Toggle ---
+            darkToggle.addEventListener('click', () => {
+                isDarkMode = !isDarkMode;
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                darkToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                saveState();
+            });
+
+            // ============================================================
+            // 11. LOGIN & INIT
+            // ============================================================
+
+            const loginScreen = document.getElementById('loginScreen');
+            const appMain = document.getElementById('appMain');
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginBtn.addEventListener('click', () => {
+                loginScreen.style.display = 'none';
+                appMain.style.display = 'flex';
+                initApp();
+            });
+            document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') loginBtn.click();
+            });
+
+            function initApp() {
+                // Apply Dark Mode
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                darkToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+                render();
+                startIncomingSimulation();
+                showNotification('📬 Welcome', 'Admond Mailing Simulation is ready.', 'success');
+            }
+
+            // Expose for debugging
+            window.__emails = emails;
+            window.__state = { currentFolder, currentTab, selectedEmailId, searchQuery, sortBy, selectedCheckboxIds };
+
+        })();
+    </script>
+</body>
+</html>
