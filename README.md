@@ -803,7 +803,6 @@ See the `LICENSE` file for complete details.
 <br>
 
 <a href="https://muhammadaffan0205.github.io/admond-mailing/">
-<img src="https://img.shields.io/badge/🚀_EXPLORE_LIVE_DEMO-2563EB?style=for-the-badge" alt="Live Demo"/>
 </a>
 
 <br><br>
