@@ -595,19 +595,6 @@ Static Hosting
 Public Web Application
 ```
 
-### 🚀 Live Application
-
-<div align="center">
-
-<a href="https://muhammadaffan0205.github.io/admond-mailing/">
-
-<img src="https://img.shields.io/badge/OPEN_ADMOND_MAILING-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Open Admond Mailing"/>
-
-</a>
-
-</div>
-
----
 
 # 🗺️ Roadmap
 
