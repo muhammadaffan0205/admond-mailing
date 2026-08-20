@@ -9,7 +9,6 @@
 <br>
 
 <a href="https://muhammadaffan0205.github.io/admond-mailing/">
-<img src="https://img.shields.io/badge/🚀_LIVE_DEMO-2563EB?style=for-the-badge&logoColor=white" alt="Live Demo"/>
 </a>
 &nbsp;
 <a href="https://github.com/muhammadaffan0205/admond-mailing">
